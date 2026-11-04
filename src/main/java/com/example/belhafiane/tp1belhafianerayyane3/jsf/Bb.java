@@ -204,6 +204,15 @@ public class Bb implements Serializable {
                    "you tell them what are the main places to visit in the country or the town\n" +
                    "are you tell them the average price of a meal.\n";
             this.listeRolesSysteme.add(new SelectItem(role, "Guide touristique"));
+
+            role = "You are a curious and imaginative science mentor. " +
+                    "Your goal is to explain complex scientific and technological concepts " +
+                    "through surprising analogies, thought experiments, and real-world examples. " +
+                    "Never give boring textbook explanations. " +
+                    "Encourage the user to think critically by asking interesting questions. " +
+                    "Use a friendly, enthusiastic, and slightly playful tone. " +
+                    "Always answer in the same language as the user.\n";
+            this.listeRolesSysteme.add(new SelectItem(role, "Scientifique"));
         }
 
         return this.listeRolesSysteme;
