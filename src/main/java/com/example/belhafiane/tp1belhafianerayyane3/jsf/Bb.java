@@ -1,6 +1,8 @@
 package com.example.belhafiane.tp1belhafianerayyane3.jsf;
 
 import com.example.belhafiane.tp1belhafianerayyane3.service.GenerateurReponse;
+import com.example.belhafiane.tp1belhafianerayyane3.llm.JsonAdapterPourGemini;
+import com.example.belhafiane.tp1belhafianerayyane3.llm.LlmInteraction;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
@@ -120,24 +122,44 @@ public class Bb implements Serializable {
      */
     public String envoyer() {
         if (question == null || question.isBlank()) {
-            // Erreur ! Le formulaire va être réaffiché en réponse à la requête POST, avec un message d'erreur.
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Texte question vide", "Il manque le texte de la question");
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR,
+                    "Texte question vide",
+                    "Il manque le texte de la question"
+            );
+
             facesContext.addMessage(null, message);
             return null;
         }
 
-        // Traite la question pour construire la réponse.
-        String roleSystemePourModification = null;
-        if (this.conversation.isEmpty()) { // Si la conversation n'a pas encore commencé
-            roleSystemePourModification = this.roleSysteme; // Pour GenerateurReponse.modifier()
-            // Invalide la liste pour changer le rôle système
-            this.roleSystemeChangeable = false;
-        }
-        this.reponse += this.generateurReponse.genererReponse(this.question, roleSystemePourModification);
+        try {
+            if (this.conversation.isEmpty()) {
+                jsonAdapter.setSystemRole(this.roleSysteme);
+                this.roleSystemeChangeable = false;
+            }
 
-        // La conversation contient l'historique des questions-réponses depuis le début.
+            LlmInteraction interaction = jsonAdapter.envoyerRequete(question);
+
+            this.reponse = interaction.reponseExtraite();
+            this.texteRequeteJson = interaction.questionJson();
+            this.texteReponseJson = interaction.reponseJson();
+
+        } catch (Exception e) {
+            this.reponse = "Erreur : " + e.getMessage();
+
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR,
+                    "Problème de connexion avec l'API du LLM",
+                    "Problème de connexion avec l'API du LLM : "
+                            + e.getMessage() + "\n"
+                            + Arrays.toString(e.getStackTrace())
+            );
+
+            facesContext.addMessage(null, message);
+        }
+
         afficherConversation();
+
         return null;
     }
 
@@ -186,4 +208,30 @@ public class Bb implements Serializable {
         return this.listeRolesSysteme;
     }
 
+    private boolean debug=false;
+    private String texteRequeteJson;
+    private String texteReponseJson;
+
+    public void setDebug(boolean debug){
+        this.debug=debug;
+    }
+
+    public String getTexteRequeteJson(){
+        return this.texteRequeteJson;
+    }
+
+    public void setTexteRequeteJson(String texteRequeteJson){
+        this.texteRequeteJson=texteRequeteJson;
+    }
+
+    public String getTexteReponseJson(){
+        return this.texteReponseJson;
+    }
+
+    public void setTexteReponseJson(String texteReponseJson){
+        this.texteReponseJson=texteReponseJson;
+    }
+
+    @Inject
+    private JsonAdapterPourGemini jsonAdapter;
 }
