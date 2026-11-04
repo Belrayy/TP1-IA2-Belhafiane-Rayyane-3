@@ -1,11 +1,13 @@
 package com.example.belhafiane.tp1belhafianerayyane3.llm;
 
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.Dependent;
 import jakarta.ws.rs.client.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.io.Serializable;
+import io.github.cdimascio.dotenv.Dotenv;
 
 /**
  * Gère l'interface avec l'API de Gemini.
@@ -30,14 +32,22 @@ public class LlmClientPourGemini implements Serializable {
 
     public LlmClientPourGemini() {
         // Récupère la clé secrète pour travailler avec l'API du LLM, mise dans une variable d'environnement
-        // du système d'exploitation.
-        A ECRIRE...
+        // du système d'exploitation
+        Dotenv dotenv = Dotenv.load();
+        this.key = dotenv.get("GEMINI_KEY");
+        if (this.key == null || this.key.isBlank()) {
+            throw new IllegalStateException(
+                    "GEMINI_API_KEY is missing from .env"
+            );
+        }
+        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=" + key;
         // Client REST pour envoyer des requêtes vers les endpoints de l'API du LLM
         this.clientRest = ClientBuilder.newClient();
         // Endpoint REST pour envoyer la question à l'API.
         // L'URL à trouver a été utilisé dans la commande curl pour tester la clé secrète.
         // Elle se trouve aussi dans le support de cours.
-        this.target = clientRest.target("A CHERCHER DANS LE COURS...");
+        this.target = clientRest.target(url);
+        Invocation.Builder requete = target.request(MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**

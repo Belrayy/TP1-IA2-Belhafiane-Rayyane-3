@@ -12,6 +12,7 @@ import jakarta.inject.Named;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -214,6 +215,10 @@ public class Bb implements Serializable {
 
     public void setDebug(boolean debug){
         this.debug=debug;
+    }
+
+    public boolean isDebug() {
+        return this.debug;
     }
 
     public String getTexteRequeteJson(){
