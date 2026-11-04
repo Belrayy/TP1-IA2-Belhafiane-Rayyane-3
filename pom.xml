@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example.belhafiane</groupId>
-    <artifactId>TP0_Belhafiane_Rayyane</artifactId>
+    <artifactId>TP1_Belhafiane_Rayyane-3</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>TP0_Belhafiane_Rayyane</name>
+    <name>TP1_Belhafiane_Rayyane</name>
     <packaging>war</packaging>
 
     <properties>
